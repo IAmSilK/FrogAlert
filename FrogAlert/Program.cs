@@ -1,6 +1,8 @@
 using FrogAlert.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using FrogAlert.Alerts;
+using FrogAlert.Alerts.SMS;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,12 @@ builder.Services.AddSwaggerGen(options =>
 
 // Add database
 builder.Services.AddDbContext<FrogAlertDbContext>(ServiceLifetime.Transient);
+
+// Add alert providers
+builder.Services.AddSingleton<SMSAlertProvider>();
+
+// Add environment monitor service
+builder.Services.AddHostedService<MonitorService>();
 
 var app = builder.Build();
 
