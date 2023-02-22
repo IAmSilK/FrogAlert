@@ -1,9 +1,10 @@
-﻿using FrogAlert.Alerts.SMS;
+﻿using FrogAlert.Alerts;
+using FrogAlert.Alerts.SMS;
 using FrogAlert.Database;
 using FrogAlert.Monitoring.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace FrogAlert.Alerts
+namespace FrogAlert.Monitoring
 {
     public class MonitorService : BackgroundService
     {
@@ -43,6 +44,8 @@ namespace FrogAlert.Alerts
                 _lastAlertTime = DateTimeOffset.UtcNow;
             }
 
+            _logger.LogInformation("Sending alert:\n{AlertMessage}", message);
+
             foreach (var alertProvider in _alertProviders)
             {
                 try
@@ -65,8 +68,6 @@ namespace FrogAlert.Alerts
             if ((DateTimeOffset.UtcNow - latestSnapshot.Time).TotalSeconds > _configuration.SecondsWithoutData)
             {
                 // No recent data. Send alert.
-
-                _logger.LogInformation("No data from past {SecondsWithoutData} seconds. Sending alert.", _configuration.SecondsWithoutData);
 
                 await SendAlertAsync(string.Format(_configuration.Messages.NoRecentData, latestSnapshot.TempC, latestSnapshot.Humidity, latestSnapshot.Time));
                 
@@ -95,9 +96,6 @@ namespace FrogAlert.Alerts
                     messageFormat = _configuration.Messages.HumidityOutOfRange;
                 }
 
-                _logger.LogInformation("Temperature and/or humidity out of range. Sending alert. Temperature: {TempC} Humidity: {Humidity}",
-                    latestSnapshot.TempC, latestSnapshot.Humidity);
-
                 await SendAlertAsync(string.Format(messageFormat,
                     latestSnapshot.TempC, latestSnapshot.Humidity, latestSnapshot.Time));
 
@@ -106,10 +104,8 @@ namespace FrogAlert.Alerts
 
             if (!checkAlert && _lastCheckAlert)
             {
-                _logger.LogInformation("No issues with environment status after alert sent. Sending all clear.");
-
                 await SendAlertAsync(string.Format(_configuration.Messages.AllClear,
-                    latestSnapshot.TempC, latestSnapshot.Humidity, latestSnapshot.Time));
+                    latestSnapshot.TempC, latestSnapshot.Humidity, latestSnapshot.Time), true);
             }
 
             _lastCheckAlert = checkAlert;

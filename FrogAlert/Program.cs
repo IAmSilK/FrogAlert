@@ -1,8 +1,8 @@
+using FrogAlert.Alerts.SMS;
 using FrogAlert.Database;
+using FrogAlert.Monitoring;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using FrogAlert.Alerts;
-using FrogAlert.Alerts.SMS;
 
 var builder = WebApplication.CreateBuilder(args);
 
