@@ -1,3 +1,4 @@
+using FrogAlert.Auth;
 using FrogAlert.Database;
 using FrogAlert.Database.Models;
 using FrogAlert.Models;
@@ -8,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 namespace FrogAlert.Controllers
 {
     [ApiController]
+    [ApiKeyFilter]
     [Route("[controller]")]
     public class EnvironmentController : ControllerBase
     {

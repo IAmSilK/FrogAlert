@@ -1,5 +1,7 @@
 ﻿var client = new HttpClient();
+
 client.BaseAddress = new Uri("http://localhost:5003/");
+client.DefaultRequestHeaders.Add("X-API-KEY", "CHANGEME");
 
 var environmentSnapshots = new List<(int Delay, float Humidity, float TempC)>
 {
